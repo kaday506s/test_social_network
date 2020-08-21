@@ -18,13 +18,19 @@ from django.urls import path
 from django.conf.urls import include
 
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView, TokenVerifyView
 
-from app.views import UserViewSet
+from app.views import UserViewSet, PostViewSet, LoginViewSet
 
 router = DefaultRouter(trailing_slash=False)
 router.register('users', UserViewSet, basename='reports')
+router.register('post', PostViewSet, basename='posts')
 
 urlpatterns = [
+    path('login/', LoginViewSet.as_view(), name='token_obtain_pair'),
+    path('token_refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token_verify/', TokenVerifyView.as_view(), name='token_verify'),
+
     path('api/v1/', include(router.urls)),
     path('admin/', admin.site.urls),
 ]

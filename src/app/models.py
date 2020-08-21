@@ -37,6 +37,7 @@ class Users(AbstractUser):
         return self.username
 
 
+# TODO add like , analysis, views ...
 class Post(models.Model):
     """
 
