@@ -20,9 +20,12 @@ class BaseSerializer(serializers.Serializer,):
         return JSONRenderer().render(self.data)
 
 
-class UserSerializer(BaseSerializer):
-
+class UserLiteSerializer(BaseSerializer):
+    id = serializers.IntegerField()
     username = serializers.CharField()
+
+
+class UserSerializer(UserLiteSerializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     email = serializers.EmailField()
@@ -33,11 +36,15 @@ class UserSerializer(BaseSerializer):
 
 
 class PostSerializer(BaseSerializer):
-
+    id = serializers.IntegerField(required=False)
     title = serializers.CharField()
-    author = UserSerializer()
-    date_publication = serializers.DateTimeField()
+    author = UserSerializer(read_only=True)
+    date_publication = serializers.DateTimeField(required=False)
     text = serializers.CharField()
+
+
+class PostLiteSerializer(PostSerializer):
+    author = UserLiteSerializer(read_only=True)
 
 
 # TODO -> -=+

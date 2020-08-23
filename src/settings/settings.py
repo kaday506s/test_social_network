@@ -152,3 +152,20 @@ class Base(Configuration):
         'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
         'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
     }
+    PAGINATION_SIZE = 10
+
+    REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
+            'rest_framework.authentication.TokenAuthentication',
+        ),
+        'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+        'DEFAULT_THROTTLE_CLASSES': [
+            'rest_framework.throttling.AnonRateThrottle',
+            'rest_framework.throttling.UserRateThrottle'
+        ],
+        'DEFAULT_THROTTLE_RATES': {
+            'anon': '100/hour',
+            'user': '1000/hour'
+        },
+    }
