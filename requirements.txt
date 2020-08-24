@@ -6,6 +6,6 @@ djangorestframework-simplejwt==4.4.0
 
 pytest==5.2.2
 pytest-django==3.7.0
-
+drf-yasg==1.17.0
 python-decouple==3.1
-
+django-cors-headers==3.2.0

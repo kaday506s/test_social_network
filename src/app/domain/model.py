@@ -25,6 +25,7 @@ class Post:
 
     text: str
     date_publication: datetime
+    likes: int
 
     def __str__(self):
         return self.title

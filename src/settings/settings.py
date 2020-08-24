@@ -40,7 +40,12 @@ class Base(Configuration):
         'django.contrib.messages',
         'django.contrib.staticfiles',
 
-        'app.apps.ModelTestConfig'
+        'corsheaders',
+        'rest_framework',
+        'drf_yasg',
+
+        'app.apps.ModelTestConfig',
+
     ]
 
     MIDDLEWARE = [
@@ -168,4 +173,16 @@ class Base(Configuration):
             'anon': '100/hour',
             'user': '1000/hour'
         },
+    }
+
+    # SWAGGER SETTINGS
+    SWAGGER_SETTINGS = {
+        'USE_SESSION_AUTH': False,
+        'SECURITY_DEFINITIONS': {
+            'Bearer': {
+                'type': 'apiKey',
+                'name': 'Authorization',
+                'in': 'header'
+            }
+        }
     }

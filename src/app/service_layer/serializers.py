@@ -36,18 +36,24 @@ class UserSerializer(UserLiteSerializer):
 
 
 class PostSerializer(BaseSerializer):
+
     id = serializers.IntegerField(required=False)
     title = serializers.CharField()
     author = UserSerializer(read_only=True)
     date_publication = serializers.DateTimeField(required=False)
     text = serializers.CharField()
+    likes = serializers.IntegerField()
 
 
 class PostLiteSerializer(PostSerializer):
     author = UserLiteSerializer(read_only=True)
 
 
-# TODO -> -=+
+class LikeSerializer(BaseSerializer):
+    id = serializers.IntegerField(required=True)
+    username = serializers.CharField(required=True)
+
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
     Serialize Token

@@ -7,3 +7,8 @@ class Methods(Enum):
     GET = 'get'
     DELETE = 'delete'
     PUT = 'put'
+
+
+class LikeStatus(Enum):
+    LIKE = 'Like'
+    UNLIKE = 'UnLike'

@@ -4,6 +4,7 @@ from typing import Optional, Union, List
 
 from app.contrib.response_err import _response_err
 from app.domain import model as domain_models
+from app.consts import LikeStatus
 from app import models as django_models
 
 
@@ -49,6 +50,7 @@ class BasicRepository:
         """
         raise NotImplemented
 
+    # TODO append create user
     @abc.abstractmethod
     def create_user(self, username: str, email: str, first_name: str = None,
                     last_name: str = None, middle_name: str = None,
@@ -89,12 +91,34 @@ class BasicRepository:
         """
         raise NotImplemented
 
+    # TODO append delete user
     @abc.abstractmethod
     def delete_user_by_id(self, _id: int):
         raise NotImplemented
 
     @abc.abstractmethod
     def delete_post_by_id(self, _id: int, user: django_models.Users):
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def post_like(self, user: django_models.Users, pk_post: int):
+        """
+        :param user:
+        :param pk_post:
+        :return:
+        """
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def get_users_like_by_post(self, pk_post: int, page: int,
+                               date_from: str = None, date_to: str = None):
+        """
+        :param date_to:
+        :param date_from:
+        :param pk_post:
+        :param page:
+        :return:
+        """
         raise NotImplemented
 
 
@@ -126,6 +150,7 @@ class DjangoRepository(BasicRepository):
             author=orm_obj.author,
             text=orm_obj.text,
             date_publication=orm_obj.date_publication,
+            likes=orm_obj.total_likes()
         )
 
     def _get_by_id_from_orm(self, django_model, _id: int) -> \
@@ -249,3 +274,41 @@ class DjangoRepository(BasicRepository):
             raise _response_err(err)
 
         return self._to_domain_list(orm_objs)
+
+    def post_like(self, user, pk_post):
+        try:
+            orm_post = django_models.Post.get_by_id(_id=pk_post)
+        except django_models.Post.DoesNotExist:
+            raise _response_err(f'Post - id {pk_post} DoesNotExist')
+
+        like_orm, is_created = django_models.Like.add_like(
+            orm_post=orm_post, user=user
+        )
+        if not is_created:
+            django_models.Like.delete_like(
+                orm_post=orm_post, user=user
+            )
+            return LikeStatus.UNLIKE.value
+
+        return LikeStatus.LIKE.value
+
+    def get_users_like_by_post(self, pk_post: int, page: int,
+                               date_from: str = None, date_to: str = None):
+        date_range = {}
+        if date_from and date_to:
+            date_range = {
+                'likes__timestamp__gte': date_from,
+                'likes__timestamp__lte': date_to
+            }
+
+        try:
+            orm_post = django_models.Post.get_by_id(_id=pk_post)
+        except django_models.Post.DoesNotExist:
+            raise _response_err(f'Post - id {pk_post} DoesNotExist')
+        try:
+            users_like = django_models.Post.get_detail_likes_users(
+                orm_post=orm_post, page=page, **date_range
+            )
+        except Exception as err:
+            raise _response_err(err)
+        return self._to_domain_list(users_like)
