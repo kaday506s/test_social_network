@@ -11,14 +11,14 @@ services:
       POSTGRES_PASSWORD: "postgres"
       PGDATA: /data/postgres
     volumes:
-      - postgres:/data/postgres
+      - postgres_data:/data/postgres
     ports:
       - 5434:5432
     networks:
-      - django_app
+      - postgres
 
+  #  TODO add entry point
   django_app:
-    restart: always
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -27,13 +27,11 @@ services:
     depends_on:
       - postgres
     networks:
-      - django_app
-#    command: 'python manage.py runserver 0.0.0.0:8000'
-    volumes:
-      - ./app/:/usr/src/app/
+      - postgres
+    command: 'python manage.py runserver 0.0.0.0:8000'
 
 volumes:
-  postgres:
+  postgres_data:
 
 networks:
-  django_app:
+  postgres:
