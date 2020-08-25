@@ -217,6 +217,7 @@ class DjangoRepository(BasicRepository):
 
         return orm_class.objects.get(id=domain_obj.id)
 
+    # TODO -> to domain then model
     def create_post(self, title: str, text: str, author: django_models.Users) \
             -> domain_models.Post:
 

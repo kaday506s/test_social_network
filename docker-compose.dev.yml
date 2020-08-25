@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:12.0-alpine
+    hostname: postgres
+    environment:
+      POSTGRES_DB: "TestDB"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5434:5432
+    networks:
+      - django_app
+
+  django_app:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    networks:
+      - django_app
+#    command: 'python manage.py runserver 0.0.0.0:8000'
+    volumes:
+      - ./app/:/usr/src/app/
+
+volumes:
+  postgres:
+
+networks:
+  django_app:
